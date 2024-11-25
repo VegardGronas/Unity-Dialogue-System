@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogueReader : MonoBehaviour
 {
@@ -8,10 +10,24 @@ public class DialogueReader : MonoBehaviour
 
     private DialogueStarter m_CurrentDialogue;
 
+    [SerializeField]
+    GameObject m_Canvas;
+
+    [SerializeField]
+    TextMeshProUGUI m_CharacterNameLabel;
+
+    [SerializeField]
+    TextMeshProUGUI m_DialogueLabel;
+
+    [SerializeField]
+    Image m_CharacterImage;
+
     private void Awake()
     {
         if(Instance != null) Destroy(Instance);
         else Instance = this;
+
+        DisableCanvas();
     }
 
     public void StartDialogue(DialogueStarter dialogue)
@@ -38,6 +54,8 @@ public class DialogueReader : MonoBehaviour
             {
                 DialogueBar bar = m_CurrentDialogue.Dialogue.dialogues[m_CurrentDialogueIndex];
 
+                EnableCanvas(bar);
+
                 if (bar.characterInfo == null)
                 {
                     Debug.LogWarning("No characterinfo");
@@ -59,6 +77,8 @@ public class DialogueReader : MonoBehaviour
     private void EndDialogue(DialogueStarter dialogue)
     {
         dialogue.EndDialogue();
+
+        DisableCanvas();
     }
 
     private void OnGUI()
@@ -68,5 +88,22 @@ public class DialogueReader : MonoBehaviour
             m_CurrentDialogueIndex++;
             RunDialogue();
         }
+    }
+
+    public void EnableCanvas(DialogueBar bar)
+    {
+        m_Canvas.SetActive(true); 
+        
+        m_DialogueLabel.text = bar.text;
+
+        m_CharacterNameLabel.text = bar.characterInfo.characterName;
+
+        if(bar.characterInfo.characterImage)
+            m_CharacterImage.sprite = bar.characterInfo.characterImage;
+    }
+
+    public void DisableCanvas() 
+    {
+        m_Canvas.SetActive(false);
     }
 }
